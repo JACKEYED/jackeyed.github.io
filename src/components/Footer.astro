@@ -1,0 +1,38 @@
+---
+import { SITE, SOCIALS } from '@/config';
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-32 border-t border-[var(--color-line)]">
+  <div
+    class="mx-auto flex max-w-5xl flex-col gap-6 px-[var(--gutter)] py-12 text-sm text-[var(--color-muted)] sm:flex-row sm:items-end sm:justify-between"
+  >
+    <div class="space-y-1.5">
+      <p class="font-serif text-base text-[var(--color-ink)]">
+        {SITE.name} · {SITE.nameEn}
+      </p>
+      <p class="font-mono text-[0.72rem] tracking-wide text-[var(--color-faint)]">
+        © {year} · 基于 Astro 构建 · 托管于 GitHub Pages
+      </p>
+    </div>
+    <ul class="flex flex-wrap gap-x-5 gap-y-2">
+      {
+        SOCIALS.map((s) => (
+          <li>
+            <a
+              href={s.href}
+              class="link-underline"
+              rel={s.href.startsWith('http') ? 'me noopener' : undefined}
+              target={s.href.startsWith('http') ? '_blank' : undefined}
+            >
+              {s.label}
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href="/rss.xml" class="link-underline">RSS</a>
+      </li>
+    </ul>
+  </div>
+</footer>

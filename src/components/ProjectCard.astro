@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  index: number;
+}
+const { project, index } = Astro.props;
+const { data } = project;
+const num = String(index + 1).padStart(2, '0');
+---
+
+<article data-reveal class="group relative border-t border-[var(--color-line)] py-8 first:border-t-0 sm:py-10">
+  <a href={`/research/${project.id}`} class="absolute inset-0" aria-label={data.title}></a>
+  <div class="grid gap-x-10 gap-y-4 sm:grid-cols-[3rem_1fr]">
+    <span class="hidden font-mono text-sm text-[var(--color-faint)] sm:block">{num}</span>
+    <div>
+      <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+        {
+          data.tags.map((t) => (
+            <span class="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-[var(--color-faint)]">
+              {t}
+            </span>
+          ))
+        }
+        {data.period && (
+          <span class="font-mono text-[0.68rem] tracking-wide text-[var(--color-faint)]">· {data.period}</span>
+        )}
+      </div>
+
+      <h3
+        class="font-serif text-xl text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)] sm:text-2xl"
+      >
+        {data.title}
+      </h3>
+      <p class="mt-2 max-w-2xl text-[0.95rem] leading-relaxed text-[var(--color-muted)]">
+        {data.summary}
+      </p>
+
+      {
+        data.metrics.length > 0 && (
+          <dl class="mt-5 flex flex-wrap gap-x-10 gap-y-3">
+            {data.metrics.map((m) => (
+              <div>
+                <dt class="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-[var(--color-faint)]">
+                  {m.label}
+                </dt>
+                <dd class="tnum mt-0.5 font-serif text-lg text-[var(--color-ink)]">{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )
+      }
+
+      {
+        data.stack.length > 0 && (
+          <p class="mt-5 font-mono text-xs text-[var(--color-faint)]">
+            {data.stack.join('  ·  ')}
+          </p>
+        )
+      }
+    </div>
+  </div>
+</article>

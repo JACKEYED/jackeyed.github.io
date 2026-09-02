@@ -1,0 +1,55 @@
+---
+import '@/styles/global.css';
+import { SITE } from '@/config';
+import BaseHead from '@/components/BaseHead.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import Analytics from '@/components/Analytics.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+}
+---
+
+<!doctype html>
+<html lang={SITE.locale} class="scroll-pt-24">
+  <head>
+    <BaseHead {...Astro.props} />
+  </head>
+  <body class="min-h-dvh antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-[var(--color-ink)] focus:px-4 focus:py-2 focus:text-sm focus:text-[var(--color-paper)]"
+      >跳到主要内容</a
+    >
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <Analytics />
+
+    <script>
+      // 滚动浮现
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px', threshold: 0.1 },
+      );
+      const attach = () =>
+        document.querySelectorAll('[data-reveal]:not(.is-visible)').forEach((el) => io.observe(el));
+      attach();
+      document.addEventListener('astro:after-swap', attach);
+    </script>
+  </body>
+</html>

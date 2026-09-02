@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>高博远 · 简历</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  @page { size: A4; margin: 14mm 15mm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #1a1a19; --soft: #33322f; --muted: #6b6a65; --faint: #9b998f;
+    --line: #e0ddd4; --accent: #3a53c8;
+  }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: "Inter", -apple-system, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: var(--soft); font-size: 10.2px; line-height: 1.6; background: #fff;
+  }
+  .serif { font-family: "Newsreader", "Noto Serif SC", Georgia, "Songti SC", serif; }
+  .mono { font-family: "JetBrains Mono", "SF Mono", Consolas, monospace; }
+
+  header { display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 16px; }
+  h1 { font-family: "Newsreader", "Noto Serif SC", Georgia, "Songti SC", serif; font-size: 27px; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--ink); }
+  h1 span { font-size: 13px; color: var(--faint); font-weight: 400; margin-left: 8px; }
+  .tagline { color: var(--muted); font-size: 10.5px; margin-top: 3px; }
+  .contact { text-align: right; font-size: 9.3px; color: var(--muted); line-height: 1.7; }
+  .contact .mono { color: var(--ink); }
+
+  section { margin-bottom: 15px; }
+  .sec-label { font-family: "JetBrains Mono", monospace; font-size: 8.2px; font-weight: 500;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .entry { margin-bottom: 11px; }
+  .entry:last-child { margin-bottom: 0; }
+  .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .entry-title { font-family: "Newsreader", "Noto Serif SC", Georgia, serif; font-size: 12.5px; color: var(--ink); font-weight: 600; }
+  .entry-title em { font-style: normal; font-family: "Inter", sans-serif; font-size: 9.5px;
+    font-weight: 400; color: var(--muted); margin-left: 7px; }
+  .entry-meta { font-family: "JetBrains Mono", monospace; font-size: 8.6px; color: var(--faint); white-space: nowrap; }
+  .entry-sub { font-family: "JetBrains Mono", monospace; font-size: 8.6px; color: var(--faint); margin-top: 2px; }
+  .entry-desc { color: var(--muted); margin-top: 4px; }
+
+  ul { list-style: none; margin-top: 5px; }
+  li { position: relative; padding-left: 12px; margin-bottom: 3.5px; color: var(--soft); }
+  li::before { content: ""; position: absolute; left: 0; top: 6px; width: 4px; height: 4px;
+    background: var(--accent); transform: rotate(45deg); }
+
+  .metrics { display: flex; flex-wrap: wrap; gap: 5px 7px; margin-top: 6px; }
+  .metric { border: 1px solid var(--line); padding: 2px 7px; font-size: 8.8px; }
+  .metric b { font-family: "Newsreader", "Noto Serif SC", Georgia, serif; color: var(--ink); font-weight: 600; }
+  .metric span { color: var(--faint); font-family: "JetBrains Mono", monospace; font-size: 7.6px;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-right: 5px; }
+
+  .stack { font-family: "JetBrains Mono", monospace; font-size: 8.4px; color: var(--faint); margin-top: 5px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; }
+  .skills-row { display: flex; gap: 10px; margin-bottom: 4px; }
+  .skills-row dt { font-family: "JetBrains Mono", monospace; font-size: 8.4px; color: var(--faint);
+    width: 78px; flex-shrink: 0; padding-top: 1px; }
+  .skills-row dd { color: var(--soft); }
+  .kw { color: var(--soft); }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>高博远<span>Boyuan Gao</span></h1>
+      <div class="tagline">大语言模型 · 强化学习 · 智能体系统 —— 构建能够学习、推理与行动的智能系统</div>
+    </div>
+    <div class="contact">
+      <div><span class="mono">2795181099@qq.com</span></div>
+      <div><span class="mono">19991643815</span></div>
+      <div><span class="mono">github.com/JACKEYED</span></div>
+      <div>2004.07 · 汉族</div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-label">教育背景 · Education</div>
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">西安电子科技大学 <em>软件工程 · 本科</em></div>
+        <div class="entry-meta">2022.09 – 2026.06</div>
+      </div>
+      <div class="entry-sub">已保研至复旦大学 &nbsp;|&nbsp; 综合排名 rank 1 / 88 &nbsp;|&nbsp; GPA 3.9 / 4</div>
+      <ul>
+        <li>核心课程：C 语言程序设计 100 · 计算机组成与结构 II 100 · 数据结构 96 · C++ 面向对象程序设计 95 · 计算机网络 93</li>
+        <li>校一等奖学金 · 院三好学生 · 大学生数学竞赛省级二等奖 · 高数校内竞赛优秀奖 · 英语 CET-4 / CET-6</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">科研项目 · Research</div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">Search-R1 复现：基于强化学习的搜索增强推理大模型 <em>大模型算法 / RL · 独立复现</em></div>
+        <div class="entry-meta">2025</div>
+      </div>
+      <div class="entry-desc">基于 veRL 框架复现 Search-R1，通过强化学习让 LLM 在推理过程中自主决定何时调用搜索引擎、检索什么、如何利用检索结果，实现「边推理边搜索」的多轮交错生成范式，仅用规则化结果奖励即涌现多步检索与自我纠错能力。</div>
+      <ul>
+        <li>基于 veRL 搭建多轮交错 rollout 训练框架，设计 &lt;think&gt;/&lt;search&gt;/&lt;information&gt;/&lt;answer&gt; 结构化标签协议，实现「生成—检测停止符—HTTP 调用检索—拼接上下文—继续生成」的 agentic 循环；基于 FastAPI + faiss-gpu 部署 E5 稠密检索服务（2018 Wikipedia，约 2100 万段落），以 HTTP 接口与训练框架解耦，便于切换 BM25、SerpAPI 等检索后端。</li>
+        <li>实现检索 token loss masking 机制，在 PPO/GRPO 目标中通过指示函数区分模型生成 token 与检索返回 token，仅对前者计算 policy gradient 与 KL 散度，解决外部注入 token 干扰梯度导致训练崩溃的核心问题；采用基于精确匹配（EM）的规则化结果奖励，无需训练神经奖励模型与过程级监督，将训练复杂度最小化。</li>
+        <li>基于 NQ + HotpotQA 联合训练集使用 PPO/GRPO 完成 Qwen2.5-3B 训练，在 7 个 QA 数据集（NQ / TriviaQA / PopQA / HotpotQA / 2Wiki / Musique / Bamboogle）上完成评测，平均 EM 达 0.303，相对最优 RAG 基线提升约 12%，并在域外多跳 QA 数据集上验证泛化能力。</li>
+      </ul>
+      <div class="metrics">
+        <div class="metric"><span>平均 EM</span><b>0.303</b></div>
+        <div class="metric"><span>vs RAG 基线</span><b>+12%</b></div>
+        <div class="metric"><span>模型</span><b>Qwen2.5-3B</b></div>
+        <div class="metric"><span>语料</span><b>~21M 段落</b></div>
+      </div>
+      <div class="stack">veRL · PPO / GRPO · FastAPI · faiss-gpu · E5 · Qwen2.5</div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">全链路轻量级大语言模型复现 <em>大模型算法 · 独立完成</em></div>
+        <div class="entry-meta">2025</div>
+      </div>
+      <div class="entry-desc">基于 PyTorch 从零构建并训练类 LLaMA 架构的轻量级大语言模型（MiniMind），完成预训练（Pre-training）、指令微调（SFT）、参数高效微调（LoRA）到人类偏好对齐（DPO）的全链路训练过程。</div>
+      <ul>
+        <li>从零实现 Transformer 核心组件，包括多头注意力、RMSNorm、SwiGLU 激活函数及旋转位置编码（RoPE），保证模型结构与主流 LLaMA 架构对齐。</li>
+        <li>实现 LoRA 参数高效微调模块，冻结基座模型仅训练低秩适配矩阵，显著降低微调显存占用，支持多领域快速适配。</li>
+        <li>构建 DPO（直接偏好优化）对齐流程，引入参考模型计算偏好损失，优化模型输出与人类偏好的一致性，提升生成质量。</li>
+      </ul>
+      <div class="stack">PyTorch · Transformers · LoRA · DPO · RoPE</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">实习经历 · Experience</div>
+    <div class="entry">
+      <div class="entry-head">
+        <div class="entry-title">家育宝智能科技有限公司 <em>算法实习生 · 产品「智心羽 AI」</em></div>
+        <div class="entry-meta">2026.01 – 2026.04</div>
+      </div>
+      <div class="entry-desc">语音 + 文本双驱动的多轮对话机器人助手，融合大模型技术与教育学、心理学领域知识，面向家长与学生的育儿心理健康辅导垂直场景，已在各大应用商店上线。</div>
+      <ul>
+        <li>设计并训练基于 BERT 的三分类文本路由模型，实现用户 Query 的意图识别与自动分发，将请求精准路由至公司业务 Agent、心理健康 Agent 或通用 Agent，提升多 Agent 系统的响应效率与服务质量。</li>
+        <li>基于 LangGraph 设计并实现心理情绪陪伴多智能体系统，构建「心理健康 Router Agent + 14 个角色化 Agent」协同框架，支持推荐、切换、回流及高风险安全兜底。</li>
+        <li>实现双层长期记忆模块：长期记忆采用轻量化 Mem0 框架，基于 SQLite 构建用户画像与对话 episode 存储，并通过异步事实抽取更新昵称、情绪、主题等信息。</li>
+      </ul>
+      <div class="stack">BERT · LangGraph · Mem0 · SQLite</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">技能 · Stack</div>
+    <dl>
+      <div class="skills-row"><dt>语言 / 框架</dt><dd class="kw">Python · PyTorch · C / C++ · Transformers · LangChain / LangGraph · FastAPI</dd></div>
+      <div class="skills-row"><dt>大模型 / RL</dt><dd class="kw">Pre-training / SFT · LoRA · DPO · PPO / GRPO · veRL · RAG / 检索增强</dd></div>
+      <div class="skills-row"><dt>工程 / 数据</dt><dd class="kw">faiss-gpu · Mem0 · SQLite · NumPy / pandas · Git · Jupyter</dd></div>
+    </dl>
+  </section>
+
+  <section>
+    <div class="sec-label">其它 · Misc</div>
+    <ul>
+      <li>2025 陕西省大学生篮球二级联赛暨 CUBAL 陕西赛区冠军</li>
+    </ul>
+  </section>
+</body>
+</html>

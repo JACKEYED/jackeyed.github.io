@@ -1,0 +1,26 @@
+---
+import { ANALYTICS } from '@/config';
+const { goatcounter, cloudflareToken } = ANALYTICS;
+const isProd = import.meta.env.PROD;
+---
+
+{
+  isProd && goatcounter && (
+    <script
+      is:inline
+      data-goatcounter={`https://${goatcounter}.goatcounter.com/count`}
+      async
+      src="//gc.zgo.at/count.js"
+    />
+  )
+}
+{
+  isProd && cloudflareToken && (
+    <script
+      is:inline
+      defer
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon={`{"token": "${cloudflareToken}"}`}
+    />
+  )
+}

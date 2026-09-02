@@ -1,0 +1,54 @@
+---
+title: 在 agentic RL 里，别让模型为环境的输出负责
+description: 训练检索增强推理模型时，rollout 序列里混着模型生成的 token 和检索系统注入的 token。对后者算梯度，是训练崩溃最常见的原因之一。
+date: 2026-08-20
+tags: ['RL', 'LLM', '工程笔记']
+---
+
+在复现 [Search-R1](/research/search-r1-reproduction) 的时候，我卡了很久的一个 bug，本质上是一句话：
+
+> **策略梯度只应该作用在策略自己生成的 token 上。**
+
+听起来是废话，但在多轮工具调用的场景里，它非常容易被违反。
+
+## 问题长什么样
+
+一次 agentic rollout 产生的序列大概是这样：
+
+```text
+<think> 我需要知道 X 的出生地 </think>
+<search> X birthplace </search>
+<information> [检索系统返回的 3 段 Wikipedia 文本，可能几百个 token] </information>
+<think> 所以答案是 Y </think>
+<answer> Y </answer>
+```
+
+把整条序列喂进 PPO/GRPO 的目标函数时，如果不加区分，`<information>` 里那几百个 token 也会：
+
+1. 参与 importance ratio $r_t(\theta) = \pi_\theta / \pi_{\theta_{\text{old}}}$ 的计算；
+2. 贡献 policy gradient；
+3. 被算进 KL 惩罚。
+
+但这些 token **不是模型采样出来的**，是环境（检索服务）塞进上下文的。让模型的参数去「解释」这段外部文本的似然，梯度方向就被带偏了。现象上就是：训练几十个 step 后 KL 爆炸、熵塌缩、回复退化成复读检索片段。
+
+## 修法
+
+引入一个 mask $\mathbb{I}(y_t)$，逐 token 标注它是不是策略生成的：
+
+$$
+\mathbb{I}(y_t) = \begin{cases} 1 & y_t \text{ 由策略采样}\\[2pt] 0 & y_t \text{ 是检索/工具注入} \end{cases}
+$$
+
+然后所有 per-token 的项都乘上它：
+
+$$
+\mathcal{L}(\theta) = \mathbb{E}_t\Big[\mathbb{I}(y_t)\cdot \min\big(r_t \hat{A}_t,\ \operatorname{clip}(r_t, 1-\epsilon, 1+\epsilon)\,\hat{A}_t\big)\Big] - \beta\, \mathbb{E}_t\big[\mathbb{I}(y_t)\cdot \mathrm{KL}_t\big]
+$$
+
+工程上，最省事的做法是在 rollout 阶段就把 mask 一起记录下来——每次从生成切换到「调用工具 / 拼接返回」时，把新增 token 的 mask 置 0。不要事后靠标签正则去切，`<information>` 里可能出现任何字符。
+
+## 一点延伸
+
+这个坑的普适版本是：**RL 训练 agent 时，要严格区分「决策」和「观测」。** 观测（工具返回、环境反馈、其他 agent 的发言）进入上下文只是为了 condition 策略，不进入 loss。多智能体、code interpreter、浏览器 agent 都是同一回事。
+
+想清楚哪些 token 是模型的「动作」，训练就稳一半了。

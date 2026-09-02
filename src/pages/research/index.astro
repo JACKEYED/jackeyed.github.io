@@ -1,0 +1,21 @@
+---
+import Base from '@/layouts/Base.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getProjects } from '@/lib/content';
+
+const projects = await getProjects();
+---
+
+<Base title="研究" description="高博远的研究与工程项目：大模型训练全链路复现、基于强化学习的搜索增强推理等。">
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] pb-8 pt-20 sm:pt-28">
+    <p class="eyebrow mb-5">Research & Engineering</p>
+    <h1 class="max-w-2xl font-serif text-4xl leading-tight sm:text-5xl">研究</h1>
+    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--color-muted)]">
+      围绕大语言模型的训练、对齐与智能体化展开的复现与工程实践。每个项目都附有方法、实现细节与可复核的结果。
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] pb-16">
+    {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
+  </section>
+</Base>

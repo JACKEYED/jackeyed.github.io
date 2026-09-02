@@ -1,0 +1,26 @@
+---
+interface Props {
+  index: string;
+  label: string;
+  title: string;
+  href?: string;
+  cta?: string;
+}
+const { index, label, title, href, cta } = Astro.props;
+---
+
+<div class="mb-10" data-reveal>
+  <div class="rule-label mb-3">
+    <span class="eyebrow">{index} — {label}</span>
+  </div>
+  <div class="flex items-end justify-between gap-4">
+    <h2 class="font-serif text-2xl sm:text-[1.7rem]">{title}</h2>
+    {
+      href && (
+        <a href={href} class="link-underline shrink-0 font-mono text-xs text-[var(--color-muted)]">
+          {cta ?? '查看全部'} →
+        </a>
+      )
+    }
+  </div>
+</div>

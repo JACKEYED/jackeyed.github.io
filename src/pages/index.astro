@@ -1,0 +1,179 @@
+---
+import Base from '@/layouts/Base.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { SITE, SOCIALS, CV } from '@/config';
+import { FOCUS, EXPERIENCE } from '@/data/resume';
+import { getFeaturedProjects, getProjects, getNotes } from '@/lib/content';
+
+const featured = await getFeaturedProjects();
+const projects = featured.length ? featured : (await getProjects()).slice(0, 2);
+const notes = (await getNotes()).slice(0, 3);
+
+const facts = [
+  { k: '现在', v: '西电软件工程 · rank 1/88' },
+  { k: '下一站', v: '复旦大学 · 已保研' },
+  { k: '方向', v: 'LLM · RL · Agent' },
+];
+---
+
+<Base>
+  <!-- ——— Hero ——— -->
+  <section class="relative overflow-hidden border-b border-[var(--color-line)]">
+    <div class="dot-field pointer-events-none absolute inset-x-0 top-0 h-[420px]"></div>
+    <div class="relative mx-auto max-w-5xl px-[var(--gutter)] pb-20 pt-20 sm:pt-28">
+      <p class="eyebrow mb-6">{SITE.nameEn} · 研究主页</p>
+
+      <h1 class="max-w-3xl font-serif text-4xl leading-[1.12] sm:text-6xl">
+        构建能够学习、推理<br class="hidden sm:block" /> 与行动的智能系统。
+      </h1>
+
+      <p class="mt-8 max-w-2xl font-serif text-xl italic leading-relaxed text-[var(--color-muted)] sm:text-[1.4rem]">
+        {SITE.tagline}
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3">
+        <a
+          href="/research"
+          class="rounded-md bg-[var(--color-ink)] px-5 py-2.5 text-sm text-[var(--color-paper)] transition-opacity hover:opacity-90"
+          >查看研究</a
+        >
+        <a
+          href={CV.href}
+          class="rounded-md border border-[var(--color-line-strong)] px-5 py-2.5 text-sm text-[var(--color-ink)] transition-colors hover:border-[var(--color-ink)]"
+          >下载简历 (PDF)</a
+        >
+        {
+          SOCIALS.map((s) => (
+            <a
+              href={s.href}
+              target={s.href.startsWith('http') ? '_blank' : undefined}
+              rel={s.href.startsWith('http') ? 'me noopener' : undefined}
+              class="link-underline px-1 py-2.5 font-mono text-xs text-[var(--color-muted)]"
+            >
+              {s.label}
+            </a>
+          ))
+        }
+      </div>
+
+      <dl class="mt-14 grid max-w-2xl grid-cols-1 gap-px overflow-hidden rounded-lg border border-[var(--color-line)] bg-[var(--color-line)] sm:grid-cols-3">
+        {
+          facts.map((f) => (
+            <div class="bg-[var(--color-paper)] p-4">
+              <dt class="font-mono text-[0.68rem] uppercase tracking-[0.12em] text-[var(--color-faint)]">
+                {f.k}
+              </dt>
+              <dd class="mt-1 text-sm text-[var(--color-ink)]">{f.v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- ——— 研究方向 ——— -->
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] py-14 sm:py-16">
+    <SectionHeading index="01" label="Focus" title="研究方向" />
+    <div class="grid gap-px overflow-hidden rounded-lg border border-[var(--color-line)] bg-[var(--color-line)] sm:grid-cols-2">
+      {
+        FOCUS.map((f, i) => (
+          <div class="bg-[var(--color-paper)] p-6 sm:p-8" data-reveal>
+            <span class="font-mono text-xs text-[var(--color-faint)]">0{i + 1}</span>
+            <h3 class="mt-3 font-serif text-lg text-[var(--color-ink)]">{f.title}</h3>
+            <p class="mt-2 text-[0.92rem] leading-relaxed text-[var(--color-muted)]">{f.desc}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ——— 精选研究 ——— -->
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] py-14 sm:py-16 border-t border-[var(--color-line)]">
+    <SectionHeading index="02" label="Research" title="精选研究" href="/research" cta="全部研究" />
+    <div>
+      {projects.map((project, i) => <ProjectCard project={project} index={i} />)}
+    </div>
+  </section>
+
+  <!-- ——— 经历 ——— -->
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] py-14 sm:py-16 border-t border-[var(--color-line)]">
+    <SectionHeading index="03" label="Experience" title="经历" href="/about" cta="完整履历" />
+    <div class="space-y-12">
+      {
+        EXPERIENCE.map((job) => (
+          <article data-reveal class="grid gap-x-10 gap-y-3 sm:grid-cols-[10rem_1fr]">
+            <div class="font-mono text-xs text-[var(--color-faint)] sm:pt-1">{job.period}</div>
+            <div>
+              <h3 class="font-serif text-xl text-[var(--color-ink)]">
+                {job.org}
+                <span class="ml-2 align-middle font-sans text-sm font-normal text-[var(--color-muted)]">
+                  {job.role}
+                </span>
+              </h3>
+              {job.product && (
+                <p class="mt-1 font-mono text-xs text-[var(--color-faint)]">产品 · {job.product}</p>
+              )}
+              <p class="mt-3 max-w-2xl text-[0.95rem] leading-relaxed text-[var(--color-muted)]">
+                {job.summary}
+              </p>
+              <ul class="mt-4 space-y-2">
+                {job.points.map((p) => (
+                  <li class="relative max-w-2xl pl-4 text-[0.92rem] leading-relaxed text-[var(--color-ink-soft)]">
+                    <span class="absolute left-0 top-[0.62em] size-[5px] rotate-45 bg-[var(--color-accent)]" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ——— 笔记 ——— -->
+  {
+    notes.length > 0 && (
+      <section class="mx-auto max-w-5xl px-[var(--gutter)] py-14 sm:py-16 border-t border-[var(--color-line)]">
+        <SectionHeading index="04" label="Writing" title="研究笔记" href="/notes" cta="全部笔记" />
+        <ul>
+          {notes.map((note) => (
+            <li data-reveal>
+              <a
+                href={`/notes/${note.id}`}
+                class="group flex flex-col gap-1 border-t border-[var(--color-line)] py-6 first:border-t-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8"
+              >
+                <span class="font-serif text-lg text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)]">
+                  {note.data.title}
+                </span>
+                <FormattedDate date={note.data.date} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <!-- ——— 联系 ——— -->
+  <section class="mx-auto max-w-5xl px-[var(--gutter)] py-14 sm:py-16">
+    <div class="rounded-xl border border-[var(--color-line)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-card)] sm:p-12" data-reveal>
+      <p class="eyebrow mb-4">Contact</p>
+      <h2 class="max-w-xl font-serif text-2xl sm:text-3xl">
+        对大模型、强化学习或智能体系统的合作与讨论感兴趣，欢迎来信。
+      </h2>
+      <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+        {
+          SOCIALS.map((s) => (
+            <a href={s.href} class="link-underline text-sm" target={s.href.startsWith('http') ? '_blank' : undefined}>
+              <span class="text-[var(--color-muted)]">{s.label} — </span>
+              <span class="text-[var(--color-ink)]">{s.handle}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

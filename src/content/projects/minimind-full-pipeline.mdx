@@ -1,0 +1,73 @@
+---
+title: 全链路轻量级大语言模型复现
+summary: 基于 PyTorch 从零构建并训练类 LLaMA 架构的轻量级大语言模型（MiniMind），完整跑通 Pre-training → SFT → LoRA → DPO 的训练链路。
+tags: ['大模型算法']
+role: 独立完成
+period: '2025'
+order: 20
+featured: true
+metrics:
+  - { label: '训练阶段', value: '4 / 4' }
+  - { label: '核心组件', value: '全部自实现' }
+  - { label: '对齐方法', value: 'DPO' }
+stack: ['PyTorch', 'Transformers', 'LoRA', 'DPO', 'RoPE']
+links:
+  - { label: 'GitHub', href: 'https://github.com/JACKEYED' }
+---
+
+## 背景与目标
+
+大多数「大模型入门」项目止步于调用现成的 `Trainer`。我想彻底打开黑盒：**从张量层面重写 Transformer 的每一个核心算子**，并亲手把一个模型从随机初始化推到能对齐人类偏好的状态。
+
+目标是在单机资源下，完整复现类 LLaMA 架构轻量模型（MiniMind）的四段式训练链路：
+
+1. **Pre-training** —— 在无标注语料上做自回归语言建模；
+2. **SFT（指令微调）** —— 用指令-响应对让模型学会「听话」；
+3. **LoRA** —— 参数高效微调，验证低秩适配在多领域快速迁移中的作用；
+4. **DPO（直接偏好优化）** —— 不训练奖励模型，直接用偏好数据对齐。
+
+## 架构：与主流 LLaMA 对齐
+
+我从零实现了下列组件，确保结构与主流 LLaMA 系一致，权重和推理逻辑可互相印证：
+
+- **多头自注意力**：含 KV 缓存的因果注意力，训练/推理共用一套实现；
+- **RMSNorm**：以均方根归一化替代 LayerNorm，去掉重新中心化，数值更稳、更省算力；
+- **SwiGLU** 前馈层：`SwiGLU(x) = (xW₁ ⊙ SiLU(xW₃)) W₂`，比 ReLU-MLP 在同参数量下表达力更强；
+- **旋转位置编码（RoPE）**：把相对位置信息编码进 Q/K 的旋转相位，支持推理时的长度外推。
+
+> 亲手实现 RoPE 之后才真正理解：位置信息不是「加」进去的，而是「旋转」进去的——相对位置由两个 token 的相位差自然表达。
+
+## LoRA：为什么冻结基座也能学
+
+LoRA 把权重更新约束在低秩子空间：对权重矩阵 $W_0 \in \mathbb{R}^{d\times k}$，不直接更新 $W_0$，而是学习一对小矩阵 $A \in \mathbb{R}^{r\times k}$、$B \in \mathbb{R}^{d\times r}$（$r \ll \min(d,k)$）：
+
+$$
+W = W_0 + \frac{\alpha}{r}\, B A
+$$
+
+前向时把 $BA$ 的增量并入基座输出，反向时**只有 $A$、$B$ 参与梯度计算**。我在实现中确认了两个收益：
+
+- **显存**：优化器状态只需覆盖低秩矩阵，微调显存占用显著下降；
+- **可插拔**：不同领域训练出不同的 `(A, B)` 适配器，共享同一份基座权重，切换成本极低。
+
+## DPO：跳过奖励模型的对齐
+
+RLHF 需要先训练奖励模型再跑 PPO，链路长且不稳。DPO 用一个关键观察把它压平：**最优策略与奖励之间存在闭式关系**，于是可以把偏好损失直接写成关于策略的表达式。
+
+给定偏好三元组 $(x, y_w, y_l)$（$y_w$ 优于 $y_l$），DPO 目标为：
+
+$$
+\mathcal{L}_{\text{DPO}} = -\,\mathbb{E}_{(x,y_w,y_l)}\left[\log \sigma\!\left(\beta \log \frac{\pi_\theta(y_w \mid x)}{\pi_{\text{ref}}(y_w \mid x)} - \beta \log \frac{\pi_\theta(y_l \mid x)}{\pi_{\text{ref}}(y_l \mid x)}\right)\right]
+$$
+
+实现要点：
+
+- 引入**冻结的参考模型** $\pi_{\text{ref}}$（通常取 SFT 后的模型），计算每条样本的对数似然比；
+- $\beta$ 控制对偏好的敏感度，同时隐式约束 $\pi_\theta$ 不要偏离 $\pi_{\text{ref}}$ 太远；
+- 相比 SFT，DPO 能在**不牺牲流畅度**的前提下，把输出分布往人类更偏好的方向推。
+
+## 收获
+
+- 「读懂论文」和「让 loss 正确下降」之间隔着一整个工程；亲手实现算子后，调参时的每个选择都有了物理直觉。
+- 四段链路里，**数据质量对最终表现的影响远大于结构微调**——尤其是 SFT 和偏好数据。
+- 这套代码成为我后续做 RL 训练（见 [Search-R1 复现](/research/search-r1-reproduction)）的基础设施。

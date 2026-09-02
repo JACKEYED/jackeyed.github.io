@@ -1,0 +1,51 @@
+---
+import Base from '@/layouts/Base.astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { getNotes } from '@/lib/content';
+
+const notes = await getNotes();
+---
+
+<Base title="笔记" description="高博远的研究笔记：大模型、强化学习与智能体系统的实验记录与思考。">
+  <section class="mx-auto max-w-3xl px-[var(--gutter)] pb-8 pt-20 sm:pt-28">
+    <p class="eyebrow mb-5">Notes</p>
+    <h1 class="font-serif text-4xl leading-tight sm:text-5xl">研究笔记</h1>
+    <p class="mt-6 text-lg leading-relaxed text-[var(--color-muted)]">
+      实验记录、论文精读与工程踩坑。写给未来的自己，也欢迎讨论。
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-3xl px-[var(--gutter)] pb-16">
+    {
+      notes.length === 0 ? (
+        <p class="border-t border-[var(--color-line)] py-10 text-[var(--color-muted)]">笔记正在整理中。</p>
+      ) : (
+        <ul>
+          {notes.map((note) => (
+            <li>
+              <a
+                href={`/notes/${note.id}`}
+                class="group block border-t border-[var(--color-line)] py-7 first:border-t-0"
+              >
+                <div class="flex items-center gap-3">
+                  <FormattedDate date={note.data.date} />
+                  {note.data.tags.slice(0, 2).map((t) => (
+                    <span class="font-mono text-[0.66rem] uppercase tracking-[0.12em] text-[var(--color-faint)]">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+                <h2 class="mt-2 font-serif text-xl text-[var(--color-ink)] transition-colors group-hover:text-[var(--color-accent)]">
+                  {note.data.title}
+                </h2>
+                <p class="mt-2 text-[0.95rem] leading-relaxed text-[var(--color-muted)]">
+                  {note.data.description}
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</Base>

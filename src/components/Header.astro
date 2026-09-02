@@ -1,0 +1,42 @@
+---
+import { NAV, SITE } from '@/config';
+import ThemeToggle from './ThemeToggle.astro';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-[var(--color-line)] bg-[color-mix(in_oklab,var(--color-paper)_88%,transparent)] backdrop-blur-md"
+>
+  <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-[var(--gutter)]">
+    <a href="/" class="group flex items-baseline gap-2.5" aria-label="返回首页">
+      <span class="font-serif text-lg tracking-tight">{SITE.name}</span>
+      <span class="hidden font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[var(--color-faint)] sm:inline"
+        >{SITE.nameEn}</span
+      >
+    </a>
+
+    <nav class="flex items-center gap-1" aria-label="主导航">
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            class:list={[
+              'rounded-md px-3 py-1.5 text-sm transition-colors',
+              isActive(item.href)
+                ? 'text-[var(--color-ink)]'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <span class="mx-1.5 h-4 w-px bg-[var(--color-line)]"></span>
+      <ThemeToggle />
+    </nav>
+  </div>
+</header>

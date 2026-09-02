@@ -1,0 +1,94 @@
+---
+title: 'Search-R1 复现：基于强化学习的搜索增强推理'
+summary: 基于 veRL 框架复现 Search-R1，用强化学习让 LLM 在推理过程中自主决定何时检索、检索什么、如何利用结果，仅用规则化结果奖励即涌现多步检索与自我纠错能力。
+tags: ['大模型算法', 'RL']
+role: 独立复现
+period: '2025'
+order: 10
+featured: true
+metrics:
+  - { label: '平均 EM (7 QA 数据集)', value: '0.303' }
+  - { label: '相对最优 RAG 基线', value: '+12%' }
+  - { label: '训练模型', value: 'Qwen2.5-3B' }
+  - { label: '检索语料', value: '2018 Wikipedia · ~21M 段落' }
+  - { label: '算法', value: 'PPO / GRPO' }
+stack: ['veRL', 'PPO / GRPO', 'FastAPI', 'faiss-gpu', 'E5', 'Qwen2.5']
+links:
+  - { label: 'GitHub', href: 'https://github.com/JACKEYED' }
+---
+
+## 问题
+
+标准 RAG 是「先检索、后生成」的一次性流水线：检索时机固定、query 由启发式规则拼接、模型无法根据推理中途的需要再次检索。Search-R1 的思路是把「要不要搜、搜什么、怎么用」这三个决策**交给模型自己在推理链里学**，用强化学习优化，而奖励只用最终答案是否正确。
+
+我基于 [veRL](https://github.com/volcengine/verl) 框架完整复现了这套方法，并补齐了训练稳定性所需的若干工程细节。
+
+## 系统设计
+
+### 1. 多轮交错的 agentic rollout
+
+我在 veRL 上搭了一个多轮交错的 rollout 框架，定义了一套结构化标签协议：
+
+```text
+<think> 模型的推理 </think>
+<search> 检索 query </search>
+<information> 检索系统返回的段落 </information>
+...（可多轮）...
+<answer> 最终答案 </answer>
+```
+
+rollout 循环是：**生成 → 检测停止符 `</search>` → HTTP 调用检索 → 把 `<information>` 拼回上下文 → 继续生成**，直到出现 `<answer>` 或达到轮数上限。
+
+### 2. 检索服务与训练解耦
+
+检索侧用 **FastAPI + faiss-gpu** 部署了一个独立的 E5 稠密检索微服务，索引 2018 年 Wikipedia 全量（约 2100 万段落）。训练框架只通过 HTTP 与它通信，好处是：
+
+- 训练进程不被检索占显存/CPU；
+- 可以无缝切换 BM25、SerpAPI 等其它检索后端，不动训练代码。
+
+### 3. 检索 token 的 loss masking（关键）
+
+这是复现里最容易踩崩的地方。rollout 出来的序列里，`<information>` 段是**检索系统注入的、不是模型生成的**。如果对这些 token 也算 policy gradient，等于让模型「为环境的输出负责」，梯度方向被污染，训练很快崩溃。
+
+解决方法是引入指示函数 $\mathbb{I}(y_t)$，只对模型自己生成的 token 计损失。以 PPO 为例，逐 token 目标变为：
+
+$$
+\mathcal{L}^{\text{PPO}}(\theta) = \mathbb{E}_t\Big[\mathbb{I}(y_t)\cdot \min\big(r_t(\theta)\,\hat{A}_t,\ \operatorname{clip}(r_t(\theta),\,1-\epsilon,\,1+\epsilon)\,\hat{A}_t\big)\Big]
+$$
+
+$$
+r_t(\theta) = \frac{\pi_\theta(y_t \mid y_{<t}, x)}{\pi_{\theta_{\text{old}}}(y_t \mid y_{<t}, x)},\qquad
+\mathbb{I}(y_t) = \begin{cases} 1 & y_t \text{ 由策略生成}\\ 0 & y_t \in \texttt{<information>} \end{cases}
+$$
+
+KL 惩罚项同样只在 $\mathbb{I}(y_t)=1$ 的位置累加。加上这个 mask 之后训练曲线立刻稳定。
+
+### 4. 纯规则化的结果奖励
+
+奖励只用**精确匹配（EM）**：模型 `<answer>` 与标准答案归一化后是否一致。
+
+$$
+R(x, y) = \text{EM}\big(\text{extract\_answer}(y),\ a^\star\big) \in \{0, 1\}
+$$
+
+不训练神经奖励模型、不做过程级监督（step-level reward）。这样做的代价是奖励稀疏，但换来训练复杂度和不稳定来源的最小化——而实验表明，**多步检索和自我纠错行为仍然能从这个稀疏信号里涌现出来**。
+
+## 训练与评测
+
+- **训练集**：NQ + HotpotQA 联合；
+- **算法**：分别用 PPO 和 GRPO 训练 Qwen2.5-3B；
+- **评测**：7 个 QA 数据集 —— NQ / TriviaQA / PopQA / HotpotQA / 2Wiki / Musique / Bamboogle。
+
+| 指标 | 结果 |
+| --- | --- |
+| 7 数据集平均 EM | **0.303** |
+| 相对最优 RAG 基线 | **+约 12%** |
+| 域外多跳泛化（2Wiki / Musique / Bamboogle） | 稳定优于基线 |
+
+模型学会了在单跳问题上只检索一次、在多跳问题上分解子问题多次检索，并在检索结果与推理矛盾时回退重搜。
+
+## 复盘
+
+- RL 复现里，**80% 的时间花在「让训练不崩」而不是「让指标更高」**：token masking、优势归一化、检索超时处理，每一个都能让曲线发散。
+- 把检索做成 HTTP 微服务是正确决定，调试期切到 BM25 能把一轮迭代从小时级压到分钟级。
+- 稀疏的规则奖励 + 足够的探索，确实能逼出复杂的工具使用策略——这让我对「用 RL 训练 agent」这条路更有信心。
