@@ -13,7 +13,7 @@ export const SITE = {
   tagline:
     '从零复现大模型训练全链路，用强化学习教会模型检索与决策，并把这些能力落地成面向真实用户的多智能体产品。',
   description:
-    '高博远（Boyuan Gao）的个人研究主页。西安电子科技大学软件工程 rank 1/88，已保研至复旦大学。研究方向：LLM 训练与对齐、Agentic 系统、强化学习、具身智能。',
+    '高博远（Boyuan Gao）的个人研究主页。复旦大学硕士研究生，西安电子科技大学软件工程本科（rank 1/88）。研究方向：LLM 训练与对齐、Agentic 系统、强化学习、具身智能。',
   locale: 'zh-CN',
   /** 时区，用于文章日期展示 */
   timezone: 'Asia/Shanghai',
@@ -43,7 +43,7 @@ export const SOCIALS: SocialLink[] = [
 /** 可下载简历（放在 /public/cv/ 下）。换成不加密的 PDF 后更新文件名即可。 */
 export const CV = {
   href: '/cv/GaoBoyuan-CV.pdf',
-  updated: '2026-05',
+  updated: '2026-09',
 } as const;
 
 /**

@@ -63,6 +63,7 @@ import { BIO, EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
   <!-- 教育 -->
   <section class="mx-auto max-w-3xl px-[var(--gutter)] py-14">
     <div class="rule-label mb-8"><span class="eyebrow">Education</span></div>
+    <div class="space-y-10">
     {
       EDUCATION.map((e) => (
         <div class="grid gap-x-8 gap-y-3 sm:grid-cols-[9rem_1fr]">
@@ -89,6 +90,7 @@ import { BIO, EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
         </div>
       ))
     }
+    </div>
   </section>
 
   <!-- 经历 -->

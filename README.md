@@ -23,6 +23,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # 产物在 dist/
 npm run preview
+npm run check      # astro / TypeScript 类型检查（可选，CI 里不阻塞部署）
 ```
 
 ## 目录结构
