@@ -107,4 +107,4 @@ links:
 
 ## 换头像
 
-替换 `src/assets/portrait.jpeg`（关于页会自动做灰度处理，hover 恢复彩色）。
+替换 `src/assets/portrait.jpeg`（首页与关于页共用，建议竖版近 3:4）。
