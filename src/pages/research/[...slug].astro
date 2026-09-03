@@ -43,9 +43,9 @@ const { Content } = await render(project);
 
         {
           data.metrics.length > 0 && (
-            <dl class="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--color-line)] bg-[var(--color-line)] sm:grid-cols-3">
+            <dl class="mt-10 flex flex-wrap gap-x-10 gap-y-5 rounded-lg border border-[var(--color-line)] bg-[var(--color-surface)] px-6 py-5">
               {data.metrics.map((m) => (
-                <div class="bg-[var(--color-paper)] p-4">
+                <div class="min-w-[7rem]">
                   <dt class="font-mono text-[0.66rem] uppercase tracking-[0.1em] text-[var(--color-faint)]">
                     {m.label}
                   </dt>

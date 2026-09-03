@@ -1,5 +1,11 @@
 /** 简历结构化数据 —— 关于页与首页共用 */
 
+/** 个人简介，首页 Hero 与关于页共用 */
+export const BIO: string[] = [
+  '西安电子科技大学软件工程本科，综合排名 rank 1/88，已保研至复旦大学。我从零复现大语言模型的训练全链路，用强化学习让模型学会在推理中检索与决策，并在实习中把这些能力落地成面向真实用户的多智能体产品。',
+  '当前的兴趣是让智能体从「处理语言」走向「感知与行动」——把 LLM、强化学习与具身智能连起来。',
+];
+
 export const FOCUS: { title: string; desc: string }[] = [
   {
     title: 'LLM 训练与对齐',
@@ -28,6 +34,8 @@ export type ExperienceItem = {
   summary: string;
   points: string[];
   stack?: string[];
+  /** 关联的项目详情页 */
+  href?: string;
 };
 
 export const EXPERIENCE: ExperienceItem[] = [
@@ -35,15 +43,18 @@ export const EXPERIENCE: ExperienceItem[] = [
     org: '家育宝智能科技有限公司',
     role: '算法实习生',
     period: '2026.01 – 2026.04',
-    product: '智心羽 AI',
+    product: '智心羽 AI · 心理情绪陪伴系统',
+    href: '/research/jiayubao-emotional-companion',
     summary:
-      '语音 + 文本双驱动的多轮对话机器人，面向家长与学生的育儿心理健康辅导垂直场景，已在各大应用商店上线。',
+      '面向 K12 学生与家长的对话式育儿 / 心理健康产品，已在各大应用商店上线。负责多智能体对话系统的算法侧。',
     points: [
-      '设计并训练基于 BERT 的三分类文本路由模型，实现用户 Query 的意图识别与自动分发，将请求精准路由至业务 / 心理健康 / 通用 Agent，提升多 Agent 系统的响应效率与服务质量。',
-      '基于 LangGraph 实现心理情绪陪伴多智能体系统，构建「心理健康 Router Agent + 14 个角色化 Agent」协同框架，支持推荐、切换、回流与高风险安全兜底。',
-      '实现双层长期记忆模块：长期记忆采用轻量化 Mem0 框架，基于 SQLite 构建用户画像与对话 episode 存储，并通过异步事实抽取更新昵称、情绪、主题等信息。',
+      '基于 LangGraph 设计并实现情绪陪伴多智能体系统：一个三阶段情绪路由 Agent（会话摘要 / 情绪信号 / 推荐）+ 14 个「物件人格」角色化 Agent，每个角色是独立子图，支持 handoff、情绪回流与安全兜底。',
+      '训练基于 BERT 的多标签意图 / 年龄段分类器做 Query 路由：focal loss + 标签平滑 + 动态加权损失 + 关键词混合判定，把请求分流到心理 / 百科 / 通用能力，减少误路由。',
+      '搭建检索层：年龄段过滤 + LLM 查询扩展 + HyDE + 向量 / BM25 多路召回 + RRF 融合 + CrossEncoder 精排，为心理博士与百科 Agent 提供可追溯的知识上下文。',
+      '实现三层长期记忆：会话摘要（阈值触发重写）→ 事实抽取（异步、增量沉淀 topic）→ 低频整理（归并去重、相对时间转绝对），并配合算法端无状态化改造把记忆读写解耦给业务后端。',
+      '产品安全底线：两级危机检测（关键词召回 + LLM 复核），命中后绕过 LLM 直接返回含援助热线的固定转介话术，杜绝号码幻觉。',
     ],
-    stack: ['BERT', 'LangGraph', 'Mem0', 'SQLite'],
+    stack: ['LangGraph', 'BERT', 'Elasticsearch', 'BM25 / RRF', 'vLLM', 'FastAPI'],
   },
 ];
 
@@ -77,11 +88,15 @@ export const SKILLS: { group: string; items: string[] }[] = [
   },
   {
     group: '大模型 & RL',
-    items: ['Pre-training / SFT', 'LoRA', 'DPO', 'PPO / GRPO', 'veRL', 'RAG / 检索增强'],
+    items: ['Pre-training / SFT', 'LoRA', 'DPO', 'PPO / GRPO', 'veRL', 'BERT 微调'],
+  },
+  {
+    group: '检索 & 智能体',
+    items: ['RAG / HyDE', 'BM25 / RRF', 'CrossEncoder 精排', 'Elasticsearch', 'faiss-gpu', '长期记忆'],
   },
   {
     group: '工程 & 数据',
-    items: ['faiss-gpu', 'Mem0', 'SQLite', 'NumPy / pandas', 'Git', 'Jupyter'],
+    items: ['vLLM', 'FastAPI', 'SQLite', 'NumPy / pandas', 'Git', 'Jupyter'],
   },
 ];
 

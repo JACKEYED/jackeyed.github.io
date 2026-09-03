@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import Base from '@/layouts/Base.astro';
 import portrait from '@/assets/portrait.jpeg';
 import { SITE, SOCIALS, CV } from '@/config';
-import { EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
+import { BIO, EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
 ---
 
 <Base title="关于" description={SITE.description}>
@@ -25,13 +25,18 @@ import { EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
             {SITE.nameEn}
           </span>
         </h1>
-        <p class="mt-5 text-lg leading-relaxed text-[var(--color-ink-soft)]">
-          西安电子科技大学软件工程本科（rank 1/88，已保研至复旦大学）。我从零复现大语言模型的训练全链路，
-          用强化学习让模型学会在推理中检索与决策，并在实习中把这些能力落地成面向真实用户的多智能体产品。
-        </p>
-        <p class="mt-4 text-lg leading-relaxed text-[var(--color-muted)]">
-          当前的兴趣是让智能体从「处理语言」走向「感知与行动」——把 LLM、强化学习与具身智能连起来。
-        </p>
+        {
+          BIO.map((para, i) => (
+            <p
+              class:list={[
+                'mt-4 text-lg leading-relaxed first:mt-5',
+                i === 0 ? 'text-[var(--color-ink-soft)]' : 'text-[var(--color-muted)]',
+              ]}
+            >
+              {para}
+            </p>
+          ))
+        }
 
         <div class="mt-7 flex flex-wrap gap-x-6 gap-y-2">
           {
@@ -111,6 +116,11 @@ import { EXPERIENCE, EDUCATION, SKILLS, AWARDS } from '@/data/resume';
               </ul>
               {job.stack && (
                 <p class="mt-4 font-mono text-xs text-[var(--color-faint)]">{job.stack.join('  ·  ')}</p>
+              )}
+              {job.href && (
+                <a href={job.href} class="link-underline mt-4 inline-block font-mono text-xs text-[var(--color-accent)]">
+                  查看项目详情 →
+                </a>
               )}
             </div>
           </article>
